@@ -23,6 +23,7 @@ def load_patients_to_db(data_dir, db_config):
                 cur.execute("""
                     INSERT INTO patients (fhir_id, first_name, last_name, gender, birth_date, raw_json)
                     VALUES (%s, %s, %s, %s, %s, %s)
+                    ON CONFLICT DO NOTHING;
                 """, (
                     patient.get('id'),
                     patient.get('name', [{}])[0].get('given', [''])[0],
@@ -31,6 +32,21 @@ def load_patients_to_db(data_dir, db_config):
                     patient.get('birthDate'),
                     json.dumps(patient)  # Store raw JSON for reference
                 ))
+
+                result = cur.fetchone()
+                if result:
+                    patient_db_id = result[0]
+                    
+                    # Insert identifiers
+                    for identifier in patient.get('identifier', []):
+                        id_type = identifier.get('type', {}).get('coding', [{}])[0].get('code', 'UNKNOWN')
+                        id_value = identifier.get('value')
+                        
+                        cur.execute("""
+                            INSERT INTO identifiers (patient_id, identifier_type, identifier_value)
+                            VALUES (%s, %s, %s)
+                            ON CONFLICT DO NOTHING;
+                        """, (patient_db_id, id_type, id_value))
         
         conn.commit()
         print(f"✓ Loaded {len(list(Path(data_dir).glob('Patient-*.json')))} patients")

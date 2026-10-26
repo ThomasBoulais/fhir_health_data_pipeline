@@ -20,7 +20,7 @@ In order to store the data in a Postgres DataBase, it first has to be initiated 
 ## 1. Installing & Starting PostgreSQL locally
 
 ```bash
-# Installing postgresql
+# Installing postgresql if not already installed
 sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib
 
@@ -38,7 +38,7 @@ sudo systemctl status postgresql
 
 ```bash
 # Run db_setup.sql file while connected as a postgresql user
-sudo -u postgres psql
+sudo -u postgres psql -f db_setup.sql
 ```
 
 ## 3. Running the ETL python script
@@ -49,5 +49,20 @@ python load_fhir_to_postgres.py
 
 ## 5. Verifying loaded data
 ```bash
-sudo -u postgres psql -d fhir_db -c "SELECT COUNT(*) FROM patients;"
+# cmd
+psql -h localhost -U fhir_user -d fhir_db -c "
+SELECT 
+    id, 
+    fhir_id, 
+    first_name, 
+    last_name, 
+    gender, 
+    birth_date 
+FROM 
+    patients 
+LIMIT 5;"
+
+# python
+python get_postgres_data.py
 ```
+
