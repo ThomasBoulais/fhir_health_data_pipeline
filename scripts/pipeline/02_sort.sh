@@ -2,13 +2,14 @@
 
 set -e
 
+mkdir -p data/processed
 cd data/raw/au-fhir-test-data-set
 
 for subfolder in */;do
-    subfolder=${subfolder%/} # retire les slash de fin
+    subfolder=${subfolder%/} # remove ending slash /
     echo "Processing: $subfolder"
     
-    [ -d "$subfolder" ] || continue # skip les éléments qui ne sont pas des dir
+    [ -d "$subfolder" ] || continue # skip elements taht are not dir
     
     cd "$subfolder"
     
@@ -16,15 +17,12 @@ for subfolder in */;do
         [ -f "$filename" ] || continue
         
         category=${filename%%-*}
-        target_dir="../sorted-$subfolder/$category"
+        target_dir="../../../processed/sorted-$subfolder/$category"
 
         mkdir -p "$target_dir"
         echo "Moving: $filename => $category" 
         mv -- "$filename" "$target_dir/"
     done
-
-    cd ../
-    rm -d "$subfolder" 2>/dev/null || echo "Warning: Could not remove $subfolder"
 done
 
 echo "Sort complete"

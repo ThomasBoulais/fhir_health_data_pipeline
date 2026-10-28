@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 from dotenv import load_dotenv
 import os
+from pprint import pprint
 
 def load_patients_to_db(data_dir, db_config):
     """
@@ -13,12 +14,14 @@ def load_patients_to_db(data_dir, db_config):
         db_config: Dictionary with keys: host, port, database, user, password
     """
     conn = psycopg2.connect(**db_config)
+    print(db_config)
     cur = conn.cursor()
     
     try:
         for json_file in Path(data_dir).glob("Patient-*.json"):
             with open(json_file) as f:
                 patient = json.load(f)
+                pprint(patient)
 
                 cur.execute("""
                     INSERT INTO patients (fhir_id, first_name, last_name, gender, birth_date, raw_json)
@@ -73,5 +76,5 @@ if __name__ == "__main__":
         "password": os.getenv("DB_PASSWORD")
     }
     
-    data_dir = "data/raw/au-fhir-test-data-set/sorted-au-core/Patient"
+    data_dir = "data/processed/sorted-au-core/Patient"
     load_patients_to_db(data_dir, db_config)

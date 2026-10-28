@@ -1,4 +1,12 @@
-__pycache__
-myenv
-data
+# Environment
+fhir-pipeline-env/
+.env
+*.pyc
+__pycache__/
+
+# Data (regenerated each run)
+data/raw/
+data/processed/
+logs/
+
 test_api.py
