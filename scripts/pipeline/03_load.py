@@ -14,9 +14,10 @@ def load_patients_to_db(data_dir, db_config):
         db_config: Dictionary with keys: host, port, database, user, password
     """
     conn = psycopg2.connect(**db_config)
-    print(db_config)
+    # print(db_config)
     cur = conn.cursor()
-    
+
+    nb_ident = 0
     try:
         for json_file in Path(data_dir).glob("Patient-*.json"):
             with open(json_file) as f:
@@ -41,7 +42,6 @@ def load_patients_to_db(data_dir, db_config):
                 if result:
 
                     patient_db_id = result[0]
-                    print(patient_db_id)
                     
                     # Insert identifiers
                     for identifier in patient.get('identifier', []):
@@ -53,9 +53,11 @@ def load_patients_to_db(data_dir, db_config):
                             VALUES (%s, %s, %s)
                             ON CONFLICT DO NOTHING;
                         """, (patient_db_id, id_type, id_value))
+                        nb_ident += 1
         
         conn.commit()
         print(f"✓ Loaded {len(list(Path(data_dir).glob('Patient-*.json')))} patients")
+        print(f"✓ Loaded {nb_ident} identifiers")
         
     except Exception as e:
         conn.rollback()
