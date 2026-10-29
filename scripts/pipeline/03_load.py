@@ -21,12 +21,13 @@ def load_patients_to_db(data_dir, db_config):
         for json_file in Path(data_dir).glob("Patient-*.json"):
             with open(json_file) as f:
                 patient = json.load(f)
-                pprint(patient)
-
+                
                 cur.execute("""
                     INSERT INTO patients (fhir_id, first_name, last_name, gender, birth_date, raw_json)
                     VALUES (%s, %s, %s, %s, %s, %s)
-                    ON CONFLICT DO NOTHING;
+                    
+                    ON CONFLICT DO NOTHING
+                    RETURNING id, fhir_id;
                 """, (
                     patient.get('id'),
                     patient.get('name', [{}])[0].get('given', [''])[0],
@@ -38,7 +39,9 @@ def load_patients_to_db(data_dir, db_config):
 
                 result = cur.fetchone()
                 if result:
+
                     patient_db_id = result[0]
+                    print(patient_db_id)
                     
                     # Insert identifiers
                     for identifier in patient.get('identifier', []):

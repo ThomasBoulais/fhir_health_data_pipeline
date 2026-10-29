@@ -5,8 +5,8 @@
 __pycache__/
 
 # Data (regenerated each run)
-data/raw/
-data/processed/
-logs/
+data/raw/*
+data/processed/*
+logs/*
 
 test_api.py

@@ -8,37 +8,60 @@ The goal of the project is to do a Data Pipeline on fake Australian FHIR Health 
 The repo has the following structure : 
 ```
 .
-├── au_fhir_exploration.sh
-├── au_fhir_extract.sh
-├── au_fhir_sort_files.sh
-├── db_setup.sql
+├── config
+│   ├── data.yaml
+│   └── fhir_resources.yaml
+├── data
+│   ├── processed
+│   ├── raw
+│   └── schema
+├── docs
+│   ├── ARCHITECTURE.md
+│   ├── SCHEMA.md
+│   ├── SETUP.md
+│   └── TROUBLESHOOTING.md
+├── exploration
+│   └── au_fhir_exploration.sh
 ├── get_postgres_data.py
-├── load_fhir_to_postgres.py
+├── Makefile
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+├── scripts
+│   ├── pipeline
+│   │   ├── 01_extract.sh
+│   │   ├── 02_sort.sh
+│   │   └── 03_load.py
+│   └── setup
+│       └── db_setup.sql
+├── src
+│   ├── db_client.py
+│   ├── fhir_parser.py
+│   ├── __init__.py
+│   ├── logger.py
+│   ├── utils.py
+│   └── validators.py
+├── test_api.py
+└── tests
+    ├── __init__.py
+    ├── integration
+    │   └── test_pipeline.py
+    └── unit
+        ├── test_fhir_parser.py
+        └── test_validators.py
 
-1 directory, 8 files
+15 directories, 26 files
 ```
 
 ### Prerequisites & system requirements
 The project is using `Python 3.14.4` and `Postgres `
 
 ## Quick Start
-### Installation steps
-The repo is public and can be cloned using the following command : 
+### First-time setup
+After cloning the repo, all the setups commands (virtualenv initialization + requirements + DB setup) can be executed using the `make setup` command : 
 ```bash
-git clone XXX
+make setup
 ```
 
-### First-time setup
-After cloning the repo, a virtual environment should be created to limit dependencies breaking with global environment :
-```bash
-python -m venv fhir-pipeline-env
-```
-Then the `requirements.txt` should run in order to install required libraries in correct versions : 
-```bash
-python -m pip install -r requirements.txt
-```
 
 ## Detailed Setup
 ### PostgreSQL installation & configuration
