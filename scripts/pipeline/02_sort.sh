@@ -20,8 +20,8 @@ for subfolder in */;do
         target_dir="../../../processed/sorted-$subfolder/$category"
 
         mkdir -p "$target_dir"
-        echo "Moving: $filename => $category" 
-        mv -- "$filename" "$target_dir/"
+        echo "Copying: $filename => $category" 
+        cp -- "$filename" "$target_dir/"
     done
 done
 

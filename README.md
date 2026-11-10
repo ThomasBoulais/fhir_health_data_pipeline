@@ -1,143 +1,78 @@
-## Making a Postgres DB with Fake Australian FHIR Health Data
+# Australian FHIR Data Pipeline
 
-## Overview
+A small data engineering project that extracts **synthetic Australian FHIR data**,
+organizes the source files, and loads supported resources into PostgreSQL.
 
-### Goal
-The goal of the project is to do a Data Pipeline on fake Australian FHIR Health Data, extracting from a github repo to a Postgres Database.
+## What it does
 
-The repo has the following structure : 
-```
-.
-├── config
-│   ├── data.yaml
-│   └── fhir_resources.yaml
-├── data
-│   ├── processed
-│   ├── raw
-│   └── schema
-├── docs
-│   ├── ARCHITECTURE.md
-│   ├── SCHEMA.md
-│   ├── SETUP.md
-│   └── TROUBLESHOOTING.md
-├── exploration
-│   └── au_fhir_exploration.sh
-├── get_postgres_data.py
-├── Makefile
-├── README.md
-├── requirements.txt
-├── scripts
-│   ├── pipeline
-│   │   ├── 01_extract.sh
-│   │   ├── 02_sort.sh
-│   │   └── 03_load.py
-│   └── setup
-│       └── db_setup.sql
-├── src
-│   ├── db_client.py
-│   ├── fhir_parser.py
-│   ├── __init__.py
-│   ├── logger.py
-│   ├── utils.py
-│   └── validators.py
-├── test_api.py
-└── tests
-    ├── __init__.py
-    ├── integration
-    │   └── test_pipeline.py
-    └── unit
-        ├── test_fhir_parser.py
-        └── test_validators.py
+1. Extracts FHIR JSON files from the configured source.
+2. Sorts the files into a more navigable structure.
+3. Parses and validates supported resources.
+4. Loads the resulting data into PostgreSQL.
 
-15 directories, 26 files
-```
+See [Architecture](docs/ARCHITECTURE.md) for the component and data-flow overview.
 
-### Prerequisites & system requirements
-The project is using `Python 3.14.4` and `Postgres `
+## Prerequisites
 
-## Quick Start
-### First-time setup
-After cloning the repo, all the setups commands (virtualenv initialization + requirements + DB setup) can be executed using the `make setup` command : 
-```bash
-make setup
-```
+- Python [verified version]
+- PostgreSQL [verified version]
+- `make`
+- [Any other required tools, such as `git` or `curl`]
 
+## Quick start
 
-## Detailed Setup
-### PostgreSQL installation & configuration
-Once all required libraries are installed, run the following command to install and run Postgres service :
+1. Clone the repository and move into its directory.
+2. Review and update the configuration files:
+   - `config/data.yaml`
+   - `config/fhir_resources.yaml`
+3. Run the documented setup command:
+
+   ```bash
+   make setup
+   ```
+
+4. Run the pipeline using the commands documented in
+   [Setup](docs/SETUP.md).
+
+> `make setup` prepares the environment and database only if that is what its
+> Makefile target actually does. Check `make help` or the Makefile for available
+> targets and their effects.
+
+## Configuration
+
+Configuration is stored in `config/`. Do not commit credentials or other secrets.
+Use the example values and instructions in [Setup](docs/SETUP.md).
+
+## Data and schema
+
+- `data/raw/` — extracted source data
+- `data/processed/` — [describe what the pipeline writes here]
+- `data/schema/` — [describe its contents here]
+
+For table definitions, FHIR-to-column mappings, keys, and nullability, see
+[Schema](docs/SCHEMA.md).
+
+## Tests
+
+Run the tests with:
 
 ```bash
-# Installing postgresql if not already installed
-sudo apt-get update
-sudo apt-get install postgresql postgresql-contrib
-
-# Starting service
-sudo systemctl start postgresql
-
-# Enabling postgresql to start on boot (optional)
-sudo systemctl enable postgresql
-
-# Verifying if the service is running
-sudo systemctl status postgresql 
-```
-### Database & User creation
-To create the Posgres Database, run the following script : 
-```bash
-# Run db_setup.sql file while connected as root to create Database & User
-sudo -u postgres psql -f db_setup.sql
-```
-### ETL pipeline execution
-The Data Source is a github repo that contains fake Australian FHIR Health Data.  
-
-#### 1. The first step is to get the data from the repo
-```bash
-bash au_fhir_extract.sh
+[verified test command]
 ```
 
-#### 2. Sort the extracted files to improve navigation
-The source contains 3 folders, each containing unordered JSONs with names that starts with the type of entity of the file.  
-```bash
-bash au_fhir_sort_files.sh
+See [Setup](docs/SETUP.md) for separate unit and integration test commands, if
+they differ.
+
+## Documentation
+
+- [Setup](docs/SETUP.md) — prerequisites, configuration, database setup, and run commands
+- [Architecture](docs/ARCHITECTURE.md) — pipeline flow and component responsibilities
+- [Schema](docs/SCHEMA.md) — tables, relationships, and FHIR mappings
+- [Troubleshooting](docs/TROUBLESHOOTING.md) — common errors and remedies
+
+## Data notice
+
+The project is intended to use synthetic data. Do not use real patient information
+unless the project has been explicitly approved and designed for that purpose.
 ```
-
-#### 3. The data can be loaded using the python script
-```bash
-python load_fhir_to_postgres.py
-```
-## Verification
-### Validation queries
-```bash
-# cmd
-psql -h localhost -U fhir_user -d fhir_db -c "
-SELECT 
-    id, 
-    fhir_id, 
-    first_name, 
-    last_name, 
-    gender, 
-    birth_date 
-FROM 
-    patients 
-LIMIT 5;"
-
-# python
-python get_postgres_data.py
-```
-
-
-### Expected results
-\[INSERT RESULTS]
-### Data quality checks
-
-## Troubleshooting
-### Common errors & solutions
-### Connection issues
-### Performance tips
-
-## Project Structure
-- Explanation of each script
-- Data schema overview
-
-## Cleanup & Reset
-- How to reset the database
+A useful README should let a new contributor quickly answer: **What is this? What do I need? How do I get started? Where do I find the details?** Put operating-system-specific PostgreSQL installation steps, full pipeline commands, example queries, and reset instructions in `docs/SETUP.md` or `docs/TROUBLESHOOTING.md`, then link to them here.
