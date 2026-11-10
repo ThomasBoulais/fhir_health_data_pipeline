@@ -74,5 +74,3 @@ they differ.
 
 The project is intended to use synthetic data. Do not use real patient information
 unless the project has been explicitly approved and designed for that purpose.
-```
-A useful README should let a new contributor quickly answer: **What is this? What do I need? How do I get started? Where do I find the details?** Put operating-system-specific PostgreSQL installation steps, full pipeline commands, example queries, and reset instructions in `docs/SETUP.md` or `docs/TROUBLESHOOTING.md`, then link to them here.
