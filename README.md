@@ -22,16 +22,18 @@ See [Architecture](docs/ARCHITECTURE.md) for the component and data-flow overvie
 ## Quick start
 
 1. Clone the repository and move into its directory.
-2. Review and update the configuration files:
-   - `config/data.yaml`
-   - `config/fhir_resources.yaml`
-3. Run the documented setup command:
+2. Rename `.env.example` to `.env`
+3. Review and update the configuration files:
+    - `.env`
+    - `config/data.yaml` (don't change the `user` or `password` here, but in `.env`)
+    - `config/fhir_resources.yaml`
+4. Run the documented setup command:
 
    ```bash
    make setup
    ```
 
-4. Run the pipeline using the commands documented in
+5. Run the pipeline using the commands documented in
    [Setup](docs/SETUP.md).
 
 > `make setup` prepares the environment and database only if that is what its
